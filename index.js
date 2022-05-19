@@ -26,13 +26,15 @@ function verifyJWT(req, res, next) {
     });
 };
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uinnq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+
+const uri = "mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.eeqh1.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
 
 async function run() {
     try {
         await client.connect();
-        const serviceCollection = client.db('laptop-warehouse').collection('service');
+        const productCollection = client.db('laptop-warehouse').collection('product');
         const orderCollection = client.db('laptop-warehouse').collection('order');
 
         //Auth
@@ -44,33 +46,33 @@ async function run() {
             res.send({ accessToken });
         });
 
-        //Services API
-        app.get('/service', async (req, res) => {
+        //products API
+        app.get('/product', async (req, res) => {
             const query = {};
-            const cursor = serviceCollection.find(query);
-            const services = await cursor.toArray();
-            res.send(services);
+            const cursor = productCollection.find(query);
+            const products = await cursor.toArray();
+            res.send(products);
         });
 
-        app.get('/service/:id', async (req, res) => {
+        app.get('/product/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const service = await serviceCollection.findOne(query);
-            res.send(service);
+            const product = await productCollection.findOne(query);
+            res.send(product);
         });
 
         //POST
-        app.post('/service', async (req, res) => {
-            const newService = req.body;
-            const result = await serviceCollection.insertOne(newService);
+        app.post('/product', async (req, res) => {
+            const newproduct = req.body;
+            const result = await productCollection.insertOne(newproduct);
             res.send(result);
         });
 
         //DELETE
-        app.delete('/service/:id', async (req, res) => {
+        app.delete('/product/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const result = await serviceCollection.deleteOne(query);
+            const result = await productCollection.deleteOne(query);
             res.send(result);
         });
 
@@ -105,7 +107,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('Running Genius Server');
+    res.send('Running laptop warehouse server');
 });
 
 app.get('/hero', (req, res) => {
